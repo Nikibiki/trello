@@ -19,7 +19,7 @@ class DeskController extends Controller
     public function index()
     {
         $desks = Desk::all();
-        return response()->json(['data' => ['desks' => DeskResource::collection($desks)]]);
+        return response()->json(['data' => DeskResource::collection($desks)]);
     }
 
     /**
@@ -42,7 +42,7 @@ class DeskController extends Controller
      */
     public function show(Desk $desk)
     {
-        return response()->json(['data' => ['desk' => new DeskResource($desk)]]);
+        return response()->json(['data' =>  new DeskResource($desk)]);
     }
 
     /**
