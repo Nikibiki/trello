@@ -10,7 +10,7 @@
                     <span class="visually-hidden">Loading...</span>
                 </div>
             </div>
-            <div class="col-lg-4" v-for="desk in desks">
+            <div class="col-lg-4" v-for="(desk, index) in desks">
                 <div class="card mt-3">
                     <div class="card-body">
                         <router-link
@@ -19,6 +19,7 @@
                         >
                             <h5 class="card-title">{{desk.name}}</h5>
                         </router-link>
+                        <button type="button" class="btn btn-danger" @click="removeDesk(index, desk.id)">Удалить доску</button>
                     </div>
                 </div>
             </div>
@@ -48,6 +49,19 @@ export default {
         .finally(() => {
             this.loading = false
         })
+
+    },
+    methods: {
+        removeDesk(index, deskId) {
+            if(confirm('Вы действиетльно хотите удалить доску?')) {
+                axios.post('/api/v1/desks/' + deskId, {
+                    _method: 'DELETE',
+                })
+                    .then(res => {
+                        this.desks.splice(index, 1)
+                    })
+            }
+        },
     }
 }
 </script>

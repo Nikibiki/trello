@@ -5,6 +5,7 @@ import Router from 'vue-router'
 import Vuelidate from 'vuelidate'
 
 Vue.use(Router)
+Vue.use(Vuelidate)
 
 import App from './components/App'
 import Home from './components/Home'
