@@ -18,7 +18,7 @@ class DeskController extends Controller
      */
     public function index()
     {
-        $desks = Desk::all();
+        $desks = Desk::orderByDesc('created_at')->get();
         return response()->json(['data' => DeskResource::collection($desks)]);
     }
 
