@@ -1,5 +1,6 @@
 <template>
     <div class="container">
+        <h1>{{ desk.name }}</h1>
         <div class="alert alert-danger" role="alert" v-if="errored">
             Ошибка загрузки данных!
         </div>
@@ -20,6 +21,32 @@
                 Минимальное количество символов ({{$v.desk.name.$params.minLength.min}})!
             </div>
         </div>
+        <form @submit.prevent="addList">
+            <div class="mb-3">
+                <input type="text" class="form-control" id="newList" placeholder="Введите название нового списка" v-model="newListName">
+            </div>
+            <button type="submit" class="btn btn-primary">Создать список</button>
+        </form>
+        <div class="row">
+            <div class="text-center" v-if="listsLoading">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+            </div>
+            <div class="col-lg-4" v-for="(list, index) in lists">
+                <div class="card mt-3">
+                    <div class="card-body">
+                        <router-link
+                            :to="{name: 'showDesk', params: {deskId: list.id}}"
+                            v-bind:deskId="list.id"
+                        >
+                            <h5 class="card-title">{{list.name}}</h5>
+                        </router-link>
+                        <button type="button" class="btn btn-danger" @click="removeList(index, list.id)">Удалить список</button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
 </template>
 
@@ -31,14 +58,18 @@ export default {
     data() {
         return {
             desk: null,
+            lists: [],
             errored: false,
-            loading: true
+            loading: true,
+            listsLoading: false,
+            newListName: '',
         }
     },
     mounted() {
         axios.get('/api/v1/desks/' + this.deskId)
         .then(res => {
             this.desk = res.data.data
+            this.lists = this.desk.lists
         })
         .catch(error => {
             this.errored = true
@@ -58,6 +89,33 @@ export default {
 
                 })
             }
+        },
+        getLists() {
+            axios.get('api/v1/lists', {
+                params: {
+                    desk_id: this.desk_id
+                }
+            })
+            .then(res => {
+                console.log(res.data)
+            })
+        },
+        removeList(index, listId) {
+            axios.post('/api/v1/lists/' + listId, {
+                _method: 'delete',
+            })
+            .then(res => {
+                this.lists.splice(index, 1)
+            })
+        },
+        addList() {
+            axios.post('/api/v1/lists', {
+                desk_id: this.desk.id,
+                name: this.newListName,
+            })
+            .then(res => {
+                this.lists.unshift(res.data.data)
+            })
         }
     },
     validations: {

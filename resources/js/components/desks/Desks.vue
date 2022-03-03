@@ -103,7 +103,6 @@ export default {
             .catch(error => {
                 this.errors.push(error.response.data.errors.name[0])
                 this.errored = true
-                // console.log(this.errors)
             })
         },
         callValid() {

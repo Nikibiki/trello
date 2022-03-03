@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Api\v1;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\DeskStoreRequest;
 use App\Http\Resources\DeskResource;
+use App\Http\Resources\DeskWithListsResource;
 use App\Models\Desk;
-use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
 class DeskController extends Controller
@@ -42,7 +42,7 @@ class DeskController extends Controller
      */
     public function show(Desk $desk)
     {
-        return response()->json(['data' =>  new DeskResource($desk)]);
+        return response()->json(['data' =>  new DeskWithListsResource($desk)]);
     }
 
     /**

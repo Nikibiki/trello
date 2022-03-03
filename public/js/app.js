@@ -2154,6 +2154,33 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "Desk",
@@ -2161,8 +2188,11 @@ __webpack_require__.r(__webpack_exports__);
   data: function data() {
     return {
       desk: null,
+      lists: [],
       errored: false,
-      loading: true
+      loading: true,
+      listsLoading: false,
+      newListName: ''
     };
   },
   mounted: function mounted() {
@@ -2170,6 +2200,7 @@ __webpack_require__.r(__webpack_exports__);
 
     axios.get('/api/v1/desks/' + this.deskId).then(function (res) {
       _this.desk = res.data.data;
+      _this.lists = _this.desk.lists;
     })["catch"](function (error) {
       _this.errored = true;
     })["finally"](function () {
@@ -2184,6 +2215,34 @@ __webpack_require__.r(__webpack_exports__);
           name: this.desk.name
         }).then(function () {});
       }
+    },
+    getLists: function getLists() {
+      axios.get('api/v1/lists', {
+        params: {
+          desk_id: this.desk_id
+        }
+      }).then(function (res) {
+        console.log(res.data);
+      });
+    },
+    removeList: function removeList(index, listId) {
+      var _this2 = this;
+
+      axios.post('/api/v1/lists/' + listId, {
+        _method: 'delete'
+      }).then(function (res) {
+        _this2.lists.splice(index, 1);
+      });
+    },
+    addList: function addList() {
+      var _this3 = this;
+
+      axios.post('/api/v1/lists', {
+        desk_id: this.desk.id,
+        name: this.newListName
+      }).then(function (res) {
+        _this3.lists.unshift(res.data.data);
+      });
     }
   },
   validations: {
@@ -2322,7 +2381,7 @@ var _this4 = undefined;
       })["catch"](function (error) {
         _this3.errors.push(error.response.data.errors.name[0]);
 
-        _this3.errored = true; // console.log(this.errors)
+        _this3.errored = true;
       });
     },
     callValid: function callValid() {},
@@ -20695,6 +20754,8 @@ var render = function () {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", { staticClass: "container" }, [
+    _c("h1", [_vm._v(_vm._s(_vm.desk.name))]),
+    _vm._v(" "),
     _vm.errored
       ? _c(
           "div",
@@ -20758,9 +20819,119 @@ var render = function () {
             : _vm._e(),
         ])
       : _vm._e(),
+    _vm._v(" "),
+    _c(
+      "form",
+      {
+        on: {
+          submit: function ($event) {
+            $event.preventDefault()
+            return _vm.addList.apply(null, arguments)
+          },
+        },
+      },
+      [
+        _c("div", { staticClass: "mb-3" }, [
+          _c("input", {
+            directives: [
+              {
+                name: "model",
+                rawName: "v-model",
+                value: _vm.newListName,
+                expression: "newListName",
+              },
+            ],
+            staticClass: "form-control",
+            attrs: {
+              type: "text",
+              id: "newList",
+              placeholder: "Введите название нового списка",
+            },
+            domProps: { value: _vm.newListName },
+            on: {
+              input: function ($event) {
+                if ($event.target.composing) {
+                  return
+                }
+                _vm.newListName = $event.target.value
+              },
+            },
+          }),
+        ]),
+        _vm._v(" "),
+        _c(
+          "button",
+          { staticClass: "btn btn-primary", attrs: { type: "submit" } },
+          [_vm._v("Создать список")]
+        ),
+      ]
+    ),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "row" },
+      [
+        _vm.listsLoading
+          ? _c("div", { staticClass: "text-center" }, [_vm._m(1)])
+          : _vm._e(),
+        _vm._v(" "),
+        _vm._l(_vm.lists, function (list, index) {
+          return _c("div", { staticClass: "col-lg-4" }, [
+            _c("div", { staticClass: "card mt-3" }, [
+              _c(
+                "div",
+                { staticClass: "card-body" },
+                [
+                  _c(
+                    "router-link",
+                    {
+                      attrs: {
+                        to: { name: "showDesk", params: { deskId: list.id } },
+                        deskId: list.id,
+                      },
+                    },
+                    [
+                      _c("h5", { staticClass: "card-title" }, [
+                        _vm._v(_vm._s(list.name)),
+                      ]),
+                    ]
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "button",
+                    {
+                      staticClass: "btn btn-danger",
+                      attrs: { type: "button" },
+                      on: {
+                        click: function ($event) {
+                          return _vm.removeList(index, list.id)
+                        },
+                      },
+                    },
+                    [_vm._v("Удалить список")]
+                  ),
+                ],
+                1
+              ),
+            ]),
+          ])
+        }),
+      ],
+      2
+    ),
   ])
 }
 var staticRenderFns = [
+  function () {
+    var _vm = this
+    var _h = _vm.$createElement
+    var _c = _vm._self._c || _h
+    return _c(
+      "div",
+      { staticClass: "spinner-border", attrs: { role: "status" } },
+      [_c("span", { staticClass: "visually-hidden" }, [_vm._v("Loading...")])]
+    )
+  },
   function () {
     var _vm = this
     var _h = _vm.$createElement

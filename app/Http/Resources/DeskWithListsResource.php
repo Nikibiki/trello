@@ -4,7 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class DeskResource extends JsonResource
+class DeskWithListsResource extends DeskResource
 {
     /**
      * Transform the resource into an array.
@@ -14,11 +14,9 @@ class DeskResource extends JsonResource
      */
     public function toArray($request)
     {
-        return [
-            'id' => $this->id,
-            'name' => $this->name,
-            'created_at' => $this->created_at,
-//            'lists' => DeskListResource::collection($this->lists),
-        ];
+//        dd(DeskListResource::collection($this->lists)->collection->sortByDesc('created_at'));
+        $parentArray = parent::toArray($request);
+        $parentArray['lists'] = DeskListResource::collection($this->lists);
+        return $parentArray;
     }
 }
